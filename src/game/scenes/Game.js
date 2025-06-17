@@ -5,6 +5,11 @@ export class Game extends Scene {
         super('Game');
     }
 
+    collectStar(player, star) {
+        this.playerSpeed = 680;
+        star.disableBody(true, true);
+    }
+
     create() {
         this.add.image(512, 384, 'sky');
 
@@ -16,6 +21,11 @@ export class Game extends Scene {
         platforms.create(50, 350, 'ground');
         platforms.create(850, 240, 'ground');
 
+        this.playerSpeed = 160;
+        this.star = this.physics.add.sprite(512, 584, 'star');
+        this.star.setBounce(0);
+        this.star.setCollideWorldBounds(true);
+        this.physics.add.collider(this.star, platforms);
         this.player = this.physics.add.sprite(100, 450, 'dude');
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
@@ -23,6 +33,7 @@ export class Game extends Scene {
 
         this.cursors = this.input.keyboard.createCursorKeys();
         this.physics.add.collider(this.player, platforms);
+        this.physics.add.overlap(this.player, this.star, this.collectStar, null, this);
 
         this.anims.create({
             key: 'left',
@@ -54,10 +65,10 @@ export class Game extends Scene {
         if (!this.player || !this.cursors) return;
 
         if (this.cursors.left.isDown) {
-            this.player.setVelocityX(-160);
+            this.player.setVelocityX(-this.playerSpeed);
             this.player.anims.play('left', true);
         } else if (this.cursors.right.isDown) {
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(this.playerSpeed);
             this.player.anims.play('right', true);
         } else {
             this.player.setVelocityX(0);
